@@ -11,10 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.EventListener;
 import java.util.jar.Manifest;
 import java.util.jar.Pack200;
 
@@ -29,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mWriteBtn = (Button) findViewById(R.id.write_btn);
         mReadBtn = (Button) findViewById(R.id.read_btn);
+        mReadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                readExternalStorage();
+            }
+        });
         mWriteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,6 +60,25 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void readExternalStorage() {
+       String state = Environment.getExternalStorageState();
+        if (state.equals(Environment.MEDIA_MOUNTED)) {
+            File filePath = Environment.getExternalStorageDirectory();
+            File file = new File(filePath, "data.txt");
+            FileInputStream fis;
+            try {
+                fis = new FileInputStream(file);
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                String line = br.readLine();
+                Log.d(TAG, "line: " + line);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void writeExternalStorage() {
